@@ -5,18 +5,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import com.luanmxz.utils.TipoUrlEnum;
 import com.luanmxz.utils.UrlUtils;
 import com.luanmxz.utils.ytDlCommands;
 
-import org.springframework.stereotype.Service;
+import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
 public class DownloadService {
 
-    private static final String PATH_YTDLP = "C:\\yt-dlp";
+    private static final Logger logger = LoggerFactory.getLogger(DownloadService.class);
+    private static final Dotenv dotEnv = Dotenv.load();
+    private static final String PATH_YTDLP = dotEnv.get("PATH_YTDLP");
 
     public void downloadAndConvertToAudio(String url) {
+
+        logger.info("Iniciando conversao de video para audio (.mp3)");
 
         TipoUrlEnum urlEnum = UrlUtils.getTypeUrl(url);
 
@@ -29,8 +37,10 @@ public class DownloadService {
                     : ytDlCommands.buildSingleVideoCommand(url);
 
             executeCommand(command);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            logger.info("Finalizado a conversao do arquivo.");
+        } catch (IOException | InterruptedException e) {
+            logger.error(e.getMessage());
         }
 
     }
@@ -43,7 +53,7 @@ public class DownloadService {
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         while ((line = reader.readLine()) != null) {
-            System.out.println(line);
+            logger.info(line);
         }
 
         process.waitFor();
