@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.luanmxz.services.DownloadService;
 
@@ -19,11 +18,11 @@ public class DownloadController {
     DownloadService downloadService;
 
     @PostMapping("/convert")
-    public String downloadVideoAndConvertToAudio(@RequestParam("url") String url,
-            RedirectAttributes redirectAttributes) {
+    public String downloadVideoAndConvertToAudio(@RequestParam("url") String url) {
+
         downloadService.downloadAndConvertToAudio(url);
-        redirectAttributes.addFlashAttribute("message", "Conversion successful!");
-        return "redirect:/api/result";
+        return "redirect:/api/resultSuccess";
+
     }
 
     @GetMapping("/")
@@ -31,8 +30,13 @@ public class DownloadController {
         return new ModelAndView("index");
     }
 
-    @GetMapping("/result")
-    public ModelAndView result() {
-        return new ModelAndView("result");
+    @GetMapping("/resultSuccess")
+    public ModelAndView resultSuccess() {
+        return new ModelAndView("resultSuccess");
+    }
+
+    @GetMapping("/resultFailed")
+    public ModelAndView resultFailed() {
+        return new ModelAndView("resultFailed");
     }
 }
