@@ -21,22 +21,12 @@ public class DownloadController {
     public String downloadVideoAndConvertToAudio(@RequestParam("url") String url) {
 
         downloadService.downloadAndConvertToAudio(url);
-        return "redirect:/api/resultSuccess";
+        return "redirect:/";
 
     }
 
     @GetMapping("/")
     public ModelAndView index() {
         return new ModelAndView("index");
-    }
-
-    @GetMapping("/resultSuccess")
-    public ModelAndView resultSuccess() {
-        return new ModelAndView("resultSuccess");
-    }
-
-    @GetMapping("/resultFailed")
-    public ModelAndView resultFailed() {
-        return new ModelAndView("resultFailed");
     }
 }

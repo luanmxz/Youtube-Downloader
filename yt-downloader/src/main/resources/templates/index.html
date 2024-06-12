@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Convert Video to Audio</title>
+    <title>Convert Youtube Videos to Audio</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
@@ -12,7 +12,7 @@
 
 <body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center">
     <div id="content" class="w-6/12 flex flex-col items-center">
-        <h1 class="mb-4 text-3xl">Convert Video to Audio</h1>
+        <h1 class="mb-4 text-3xl">Convert Youtube Videos to Audio</h1>
         <form id="convert-form" hx-post="/api/convert" hx-target="#result" hx-swap="innerHTML" hx-indicator="#indicator"
             class="w-full flex flex-col items-center">
 
@@ -29,7 +29,7 @@
                 <button
                     class="waves-effect waves-light btn !absolute right-1 top-1 rounded bg-red-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-gray-500/20 transition-all hover:shadow-lg hover:shadow-blue-gray-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                     type="button" onclick="clearInput()">
-                    Limpar
+                    Clear
                 </button>
             </div>
 
@@ -54,12 +54,12 @@
         console.log(e.detail.xhr);
         if (e.detail.xhr.status === 200) {
             M.toast({
-                html: 'Sucesso!',
+                html: 'Sucess!',
                 classes: 'green',
                 displayLength: '1000',
             });
         } else {
-            M.toast({ html: 'Falha!', classes: 'red' });
+            M.toast({ html: 'Failed!', classes: 'red' });
         }
     });
 
