@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Conversion Result</title>
+    <script src="https://unpkg.com/htmx.org@1.4.1"></script>
+</head>
+
+<body>
+    <h1>Conversion Result</h1>
+    <div>
+        <p th:text="${message} ?: 'Conversão falhou! Tente novamente.'" />
+    </div>
+    <a href="/" hx-get="/" hx-target="#content" hx-swap="outerHTML">Back</a>
+</body>
+
+</html>

@@ -1,23 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Video to Audio Converter</title>
-    <script src="https://unpkg.com/htmx.org@1.9.12"
-        integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
-        crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    <title>Convert Video to Audio</title>
+    <script src="https://unpkg.com/htmx.org@1.4.1"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-    <h1>Video to Audio Converter</h1>
-    <form hx-target="#response" hx-post="/api/convert" hx-trigger="submit" hx-ext='json-enc'>
-        <label for="urlRecord">Video URL:</label>
-        <input type="text" id="urlRecord" name="url" required>
-        <button type="submit">Convert</button>
-    </form>
-    <div id="response"></div>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center">
+    <div id="content" class="w-6/12 flex flex-col items-center">
+        <h1 class="mb-4 text-3xl">Convert Video to Audio</h1>
+        <form id="convert-form" hx-post="/api/convert" hx-target="#result" hx-swap="innerHTML" hx-indicator="#indicator"
+            class="w-full">
+            <div class="mb-4">
+                <input type="url" id="url" name="url"
+                    class="w-full bg-gray-50 border border-gray-300 text-slate-950 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-slate-400 dark:text-slate-950 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Youtube Video URL" required />
+            </div>
+            <button type="submit"
+                class="w-full flex text-xl justify-center items-center space-x-2 mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <span>Convert</span>
+            </button>
+        </form>
+        <img id="indicator" class="htmx-indicator mt-4" src="/spinner.svg" />
+        <div id="result" class="mt-4">
+            <!-- Result will be displayed here -->
+        </div>
+    </div>
 </body>
 
 </html>
