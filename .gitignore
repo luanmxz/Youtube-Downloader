@@ -1,5 +1,5 @@
-ConvertedVideos
-DownloadedVideos
+ConvertedVideos/
+DownloadedVideos/
 target/
 .vscode/
 .env
