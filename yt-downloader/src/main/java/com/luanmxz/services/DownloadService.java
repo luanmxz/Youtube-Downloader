@@ -22,6 +22,12 @@ public class DownloadService {
     private static final Dotenv dotEnv = Dotenv.load();
     private static final String PATH_YTDLP = dotEnv.get("PATH_YTDLP");
 
+    /**
+     * Realiza o download do video e faz a conversão para áudio, exclui o video
+     * original quando terminar a conversão.
+     * 
+     * @param url url do video do youtube
+     */
     public void downloadAndConvertToAudio(String url) {
 
         logger.info("Iniciando conversao de video para audio (.mp3)");

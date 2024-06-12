@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Video to Audio Converter</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12"
+        integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+</head>
+
+<body>
+    <h1>Video to Audio Converter</h1>
+    <form hx-target="#response" hx-post="/api/convert" hx-trigger="submit" hx-ext='json-enc'>
+        <label for="urlRecord">Video URL:</label>
+        <input type="text" id="urlRecord" name="url" required>
+        <button type="submit">Convert</button>
+    </form>
+    <div id="response"></div>
+</body>
+
+</html>
