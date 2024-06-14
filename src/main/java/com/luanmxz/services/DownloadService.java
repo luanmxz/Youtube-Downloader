@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.luanmxz.utils.FileUtils;
 import com.luanmxz.utils.TipoUrlEnum;
 import com.luanmxz.utils.UrlUtils;
 import com.luanmxz.utils.ytDlCommands;
@@ -27,8 +28,20 @@ public class DownloadService {
      * original quando terminar a conversão.
      * 
      * @param url url do video do youtube
+     * @throws IOException
+     * @throws Exception
      */
     public void downloadAndConvertToAudio(String url) {
+
+        String musicFolder = "";
+
+        try {
+            musicFolder = FileUtils.getMusicFolder().toString().concat("\\");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        logger.info("MSC FOLDER -> {}", musicFolder);
 
         logger.info("Iniciando conversao de video para audio (.mp3)");
 
@@ -39,8 +52,9 @@ public class DownloadService {
         }
 
         try {
-            String[] command = urlEnum.equals(TipoUrlEnum.PLAYLIST) ? ytDlCommands.buildPlaylistCommand(url)
-                    : ytDlCommands.buildSingleVideoCommand(url);
+            String[] command = urlEnum.equals(TipoUrlEnum.PLAYLIST)
+                    ? ytDlCommands.buildPlaylistCommand(url, musicFolder)
+                    : ytDlCommands.buildSingleVideoCommand(url, musicFolder);
 
             executeCommand(command);
 

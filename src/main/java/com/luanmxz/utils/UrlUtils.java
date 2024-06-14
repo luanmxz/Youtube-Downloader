@@ -13,7 +13,7 @@ public class UrlUtils {
 
         TipoUrlEnum tipoUrl = TipoUrlEnum.SINGLE_VIDEO;
 
-        if (url.contains("playlist:list")) {
+        if (url.contains("playlist?list") || url.contains("playlist:list")) {
             tipoUrl = TipoUrlEnum.PLAYLIST;
         } else if (url.contains("&list=") && url.contains("start_radio=")) {
             tipoUrl = TipoUrlEnum.PLAYLIST_FROM_SINGLE_VIDEO;

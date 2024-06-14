@@ -9,22 +9,22 @@ public class ytDlCommands {
 
     private static String ytDlpPath = "C:\\yt-dlp";
     private static String ytDlpExecutablePath = "C:\\yt-dlp\\yt-dlp.exe";
-    private static String pathToSaveFiles = "C:\\Users\\luanm\\OneDrive\\Desktop\\Estudos\\Youtube-Downloader\\yt-downloader\\DownloadedVideos\\";
 
-    public static String[] buildSingleVideoCommand(String videoUrl) {
+    public static String[] buildSingleVideoCommand(String videoUrl, String musicFolder) {
 
         String[] commands = { ytDlpExecutablePath,
                 "-i",
                 "-x",
                 "--audio-format", "mp3",
                 "--audio-quality", "320k",
-                "-o", pathToSaveFiles + "%(title)s.%(ext)s",
+                "-o", musicFolder + "%(title)s.%(ext)s",
                 videoUrl };
 
         return commands;
     }
 
-    public static String[] buildPlaylistCommand(String playlistUrl) throws IOException, InterruptedException {
+    public static String[] buildPlaylistCommand(String playlistUrl, String musicFolder)
+            throws IOException, InterruptedException {
 
         String[] getTitleCommands = { ytDlpExecutablePath,
                 "--print", "playlist_title",
@@ -39,7 +39,7 @@ public class ytDlCommands {
         String title = titleReader.readLine();
         getTitleProcess.waitFor();
 
-        File file = new File(pathToSaveFiles + "Playlist" + "\\" + title + "\\");
+        File file = new File(musicFolder + "Playlist" + "\\" + title + "\\");
         file.mkdirs();
 
         String[] commands = { ytDlpExecutablePath,
