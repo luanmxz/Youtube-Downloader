@@ -1,73 +1,99 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR">
 
 <head>
-    <title>Convert Youtube Videos to Audio</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Vídeos do YouTube</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.4.1"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        #loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 
-<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center">
-    <div id="content" class="w-6/12 flex flex-col items-center">
-        <h1 class="mb-4 text-3xl">Convert Youtube Videos to Audio</h1>
-        <form id="convert-form" hx-post="/api/convert" hx-target="#content" hx-swap="outerHTML"
-            hx-indicator="#indicator" class="w-full flex flex-col items-center">
-
-            <div class="relative flex w-full max-w-[42rem] my-4">
-                <div class="relative h-10 w-full min-w-[200px]">
-                    <input type="url" id="url" name="url" required
-                        class="peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 pr-20 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                        placeholder=" " value="" />
-                    <label
-                        class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[11px] font-normal leading-tight text-gray-500 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                        Youtube Video URL
-                    </label>
+<body class="bg-gradient-to-r from-purple-500 to-pink-500 min-h-screen flex flex-col items-center justify-center">
+    <div class="container mx-auto px-4">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
+            <h1 class="text-4xl font-bold mb-6 text-center text-gray-800">Conversor de Vídeos do YouTube</h1>
+            
+            <form id="convert-form" hx-post="/api/convert" hx-target="#result" hx-swap="innerHTML" class="space-y-6">
+                <div class="mb-4">
+                    <label for="url" class="block text-sm font-medium text-gray-700 mb-2">Cole o link do YouTube aqui</label>
+                    <div class="relative">
+                        <input type="url" id="url" name="url" required
+                            class="w-full px-4 py-3 border-2 border-purple-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg"
+                            placeholder="https://www.youtube.com/watch?v=...">
+                        <button type="button" onclick="clearUrlInput()"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
-                <button
-                    class="waves-effect waves-light btn !absolute right-1 top-1 rounded bg-red-500 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-gray-500/20 transition-all hover:shadow-lg hover:shadow-blue-gray-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    type="button" onclick="clearInput()">
-                    Clear
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-md hover:from-purple-700 hover:to-pink-700 transition duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-xl font-semibold">
+                    <i class="fas fa-download mr-2"></i>
+                    <span>Baixar</span>
                 </button>
+            </form>
+
+            <div id="result" class="mt-6 text-center">
+                <!-- O resultado será exibido aqui -->
             </div>
 
-            <button type="submit"
-                class="w-full max-w-[42rem] flex text-xl justify-center items-center space-x-2 mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                <span>Convert</span>
-            </button>
-        </form>
-        <img id="indicator" class="htmx-indicator mt-4" src="/spinner.svg" />
-        <div id="result" class="mt-4">
-            <!-- Result will be displayed here -->
-
+            <div class="mt-8 text-center">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Como usar nosso conversor de YouTube</h2>
+                <ol class="list-decimal list-inside text-left space-y-2 text-gray-700">
+                    <li>Cole o URL do vídeo do YouTube no campo acima</li>
+                    <li>Clique no botão "Baixar"</li>
+                    <li>Aguarde o processamento do vídeo</li>
+                    <li>Faça o download do arquivo convertido</li>
+                </ol>
+            </div>
         </div>
     </div>
-</body>
 
-<script>
-    document.body.addEventListener('htmx:beforeRequest', function (event) {
-        document.getElementById('url').value = '';
-    });
+    <div id="loading">
+        <div class="loader"></div>
+    </div>
 
-    document.body.addEventListener('htmx:afterRequest', (e) => {
-        console.log(e.detail.xhr);
-        if (e.detail.xhr.status === 200) {
-            M.toast({
-                html: 'Sucess!',
-                classes: 'green',
-                displayLength: '1000',
-            });
-        } else {
-            M.toast({ html: 'Failed!', classes: 'red' });
+    <script>
+        function clearUrlInput() {
+            document.getElementById('url').value = '';
         }
-    });
 
-    function clearInput() {
-        document.getElementById('url').value = "";
-    }
-</script>
+        document.body.addEventListener('htmx:beforeRequest', function(event) {
+            document.getElementById('loading').style.display = 'flex';
+        });
 
-
+        document.body.addEventListener('htmx:afterRequest', function(event) {
+            document.getElementById('loading').style.display = 'none';
+            clearUrlInput();
+        });
+    </script>
+</body>
 </html>

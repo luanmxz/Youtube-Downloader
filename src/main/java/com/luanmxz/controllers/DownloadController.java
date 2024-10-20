@@ -1,6 +1,7 @@
 package com.luanmxz.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +19,9 @@ public class DownloadController {
     DownloadService downloadService;
 
     @PostMapping("/convert")
-    public String downloadVideoAndConvertToAudio(@RequestParam("url") String url) {
-
+    public ResponseEntity<String> downloadVideoAndConvertToAudio(@RequestParam("url") String url) {
         downloadService.downloadAndConvertToAudio(url);
-        return "redirect:/";
-
+        return ResponseEntity.ok("<p>Download concluído com sucesso!</p>");
     }
 
     @GetMapping("/")
