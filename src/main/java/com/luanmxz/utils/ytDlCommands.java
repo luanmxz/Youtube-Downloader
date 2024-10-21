@@ -5,31 +5,66 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public class ytDlCommands {
 
         private static String ytDlpPath = "C:\\yt-dlp";
         private static String ytDlpExecutablePath = "C:\\yt-dlp\\yt-dlp.exe";
 
-        public static String[] buildSingleVideoCommand(String videoUrl, String musicFolder) {
+        public static String[] buildGetThumbnailCommand(String url, String thumbnailPath) {
+
+                String[] commands = { ytDlpExecutablePath,
+                                "--write-thumbnail",
+                                "--convert-thumbnails", "jpg",
+                                "--skip-download",
+                                "--output", thumbnailPath,
+                                url };
+
+                return commands;
+        }
+
+        public static String[] buildGetTitleCommand(String url) {
+                String[] commands = { ytDlpExecutablePath,
+                                "--get-title",
+                                url };
+
+                return commands;
+        }
+
+        public static Map<String, Object> buildSingleVideoCommand(String videoUrl, String musicFolder)
+                        throws IOException, InterruptedException {
+                String filename = "%(title)s.%(ext)s";
+                String fullPath = musicFolder + filename;
 
                 String[] commands = { ytDlpExecutablePath,
                                 "-i",
                                 "-x",
                                 "--audio-format", "mp3",
-                                "--audio-quality", "320k",
-                                "--download-archive", "downloaded_videos_history.txt",
+                                "--audio-quality", "128k",
+                                "--write-thumbnail",
                                 "--progress", "%s",
-                                "-o", musicFolder + "%(title)s.%(ext)s",
+                                "-o", fullPath,
+                                "--no-check-certificate",
+                                "--prefer-ffmpeg",
+                                "--concurrent-fragments", "5",
                                 videoUrl };
 
-                return commands;
+                Map<String, Object> result = new HashMap<>();
+                result.put("commands", commands);
+                result.put("filename", fullPath);
+
+                return result;
         }
 
-        public static String[] buildPlaylistCommand(String playlistUrl, String musicFolder)
+        public static Map<String, Object> buildPlaylistCommand(String playlistUrl, String musicFolder)
                         throws IOException, InterruptedException {
 
+                String filename = "playlist_title";
+
                 String[] getTitleCommands = { ytDlpExecutablePath,
-                                "--print", "playlist_title",
+                                "--print", filename,
                                 playlistUrl };
 
                 ProcessBuilder processBuilder = new ProcessBuilder(getTitleCommands);
@@ -55,8 +90,9 @@ public class ytDlCommands {
                                 "-o", file.getAbsolutePath() + "\\" + "%(title)s.%(ext)s",
                                 playlistUrl };
 
-                // if playlist_random_download is true, add this arg --playlist-random
-
-                return commands;
+                Map<String, Object> result = new HashMap<>();
+                result.put("commands", commands);
+                result.put("filename", filename);
+                return result;
         }
 }
