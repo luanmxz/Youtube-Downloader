@@ -42,17 +42,15 @@ public class DownloadController {
 
         return ResponseEntity.ok(String.format(
                 """
-                        <div class="bg-red-500 text-white rounded flex items-center justify-between overflow-hidden h-14 max-w-sm mx-auto">
-                            <div class="flex items-center h-full">
-                                <a href="/api/download/%s" download class="flex-shrink-0 w-8 h-8 flex items-center justify-center ml-2">⬇️</a>
-                                <span class="flex-grow truncate px-3 text-xs">%s</span>
-                            </div>
-                            <div class="flex-shrink-0 flex space-x-1 pr-2">
-                                <button class="w-6 h-6 flex items-center justify-center">📁</button>
-                                <button class="w-6 h-6 flex items-center justify-center">🗑️</button>
-                            </div>
-                        </div>
-                        """,
+                <div class="bg-red-500 text-white rounded flex items-center overflow-hidden h-14 max-w-sm mx-auto">
+                    <a href="/api/download/%s" download class="flex-shrink-0 w-8 h-8 flex items-center justify-center ml-2">⬇️</a>
+                    <span class="truncate px-3 text-xs flex-grow">%s</span>
+                    <div class="flex-shrink-0 flex items-center h-full pr-2">
+                        <button class="w-5 h-5 flex items-center justify-center text-xs mr-1">📁</button>
+                        <button class="w-5 h-5 flex items-center justify-center text-xs">🗑️</button>
+                    </div>
+                </div>
+                """,
                 encodedFileName, fileName));
     }
 
