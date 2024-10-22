@@ -5,8 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import java.util.Map;
-import java.util.HashMap;
+import com.luanmxz.record.request.AudioFile;
 
 public class ytDlCommands {
 
@@ -33,7 +32,8 @@ public class ytDlCommands {
                 return commands;
         }
 
-        public static Map<String, Object> buildSingleVideoCommand(String videoUrl, String musicFolder)
+        public static String[] buildSingleVideoCommand(String url, String musicFolder,
+                        AudioFile audioFileRequest)
                         throws IOException, InterruptedException {
                 String filename = "%(title)s.%(ext)s";
                 String fullPath = musicFolder + filename;
@@ -41,31 +41,27 @@ public class ytDlCommands {
                 String[] commands = { ytDlpExecutablePath,
                                 "-i",
                                 "-x",
-                                "--audio-format", "mp3",
-                                "--audio-quality", "128k",
-                                "--write-thumbnail",
-                                "--progress", "%s",
+                                "--audio-format", audioFileRequest.getAudioFormat(),
+                                "--audio-quality", audioFileRequest.getAudioQuality(),
                                 "-o", fullPath,
                                 "--no-check-certificate",
                                 "--prefer-ffmpeg",
                                 "--concurrent-fragments", "5",
-                                videoUrl };
 
-                Map<String, Object> result = new HashMap<>();
-                result.put("commands", commands);
-                result.put("filename", fullPath);
+                                url };
 
-                return result;
+                return commands;
         }
 
-        public static Map<String, Object> buildPlaylistCommand(String playlistUrl, String musicFolder)
+        public static String[] buildPlaylistCommand(String url, String musicFolder,
+                        AudioFile audioFileRequest)
                         throws IOException, InterruptedException {
 
                 String filename = "playlist_title";
 
                 String[] getTitleCommands = { ytDlpExecutablePath,
                                 "--print", filename,
-                                playlistUrl };
+                                url };
 
                 ProcessBuilder processBuilder = new ProcessBuilder(getTitleCommands);
                 processBuilder.directory(new File(ytDlpPath));
@@ -84,15 +80,11 @@ public class ytDlCommands {
                                 "--download-archive", "downloaded_videos_history.txt",
                                 "-i",
                                 "-x",
-                                "--audio-format", "mp3",
-                                "--audio-quality", "320k",
-                                "--progress", "%s",
+                                "--audio-format", audioFileRequest.getAudioFormat(),
+                                "--audio-quality", audioFileRequest.getAudioQuality(),
                                 "-o", file.getAbsolutePath() + "\\" + "%(title)s.%(ext)s",
-                                playlistUrl };
+                                url };
 
-                Map<String, Object> result = new HashMap<>();
-                result.put("commands", commands);
-                result.put("filename", filename);
-                return result;
+                return commands;
         }
 }

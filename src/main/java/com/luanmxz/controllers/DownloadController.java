@@ -1,8 +1,8 @@
 package com.luanmxz.controllers;
 
 import java.io.IOException;
+import java.util.Base64;
 
-import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.core.io.Resource;
 import java.nio.charset.StandardCharsets;
 
+import com.luanmxz.record.request.AudioFile;
 import com.luanmxz.services.DownloadService;
+
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/api")
@@ -26,12 +28,17 @@ public class DownloadController {
     DownloadService downloadService;
 
     @PostMapping("/convert")
-    public ResponseEntity<String> downloadVideoAndConvertToAudio(@RequestParam("url") String url)
+    public ResponseEntity<String> downloadVideoAndConvertToAudio(@RequestParam("url") String url,
+            @RequestParam("format") String audioFormat, @RequestParam("quality") String audioQuality)
             throws IOException, InterruptedException {
-        String videoTitle = downloadService.getVideoTitleFromUrl(url);
-        String fileName = downloadService.downloadAndConvertToAudio(url);
 
-        String encodedFileName = new URLEncoder().encode(fileName, StandardCharsets.UTF_8);
+        AudioFile audioFileRequest = new AudioFile(url, audioFormat, audioQuality);
+
+        String[] result = downloadService.downloadAndConvertToAudio(audioFileRequest);
+        String fullPath = result[0];
+        String fileName = result[1];
+
+        String encodedFileName = Base64.getEncoder().encodeToString(fullPath.getBytes(StandardCharsets.UTF_8));
 
         return ResponseEntity.ok(String.format(
                 """
@@ -46,13 +53,14 @@ public class DownloadController {
                             </div>
                         </div>
                         """,
-                encodedFileName, videoTitle));
+                encodedFileName, fileName));
     }
 
     @GetMapping("/download/{audioUrl}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String audioUrl)
             throws IOException, InterruptedException {
-        Resource resource = downloadService.loadFileAsResource(audioUrl);
+        String decodedAudioUrl = new String(Base64.getDecoder().decode(audioUrl), StandardCharsets.UTF_8);
+        Resource resource = downloadService.loadFileAsResource(decodedAudioUrl);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);

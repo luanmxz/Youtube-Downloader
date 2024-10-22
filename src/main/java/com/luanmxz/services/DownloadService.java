@@ -2,7 +2,6 @@ package com.luanmxz.services;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -15,14 +14,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
-import com.luanmxz.utils.FileUtils;
+import com.luanmxz.record.request.AudioFile;
 import com.luanmxz.utils.TipoUrlEnum;
 import com.luanmxz.utils.UrlUtils;
 import com.luanmxz.utils.ytDlCommands;
 
-import java.util.Map;
-
 import io.github.cdimascio.dotenv.Dotenv;
+
+import java.net.MalformedURLException;
 
 @Service
 public class DownloadService {
@@ -44,47 +43,49 @@ public class DownloadService {
      * original quando terminar a conversão.
      * 
      * @param url url do video do youtube
+     * @throws InterruptedException
      * @throws IOException
      * @throws Exception
      */
-    public String downloadAndConvertToAudio(String url) {
+    public String[] downloadAndConvertToAudio(AudioFile audioFileRequest) throws IOException, InterruptedException {
 
-        String musicFolder = "";
-
-        try {
-            musicFolder = FileUtils.getMusicFolder().toString().concat("\\");
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
-        logger.info("MSC FOLDER -> {}", musicFolder);
+        String musicFolder = System.getProperty("java.io.tmpdir").concat("\\");
 
         logger.info("Iniciando conversao de video para audio (.mp3)");
 
-        TipoUrlEnum urlEnum = UrlUtils.getTypeUrl(url);
+        TipoUrlEnum urlEnum = UrlUtils.getTypeUrl(audioFileRequest.getUrl());
+
+        String url = audioFileRequest.getUrl();
 
         if (urlEnum.equals(TipoUrlEnum.PLAYLIST_FROM_SINGLE_VIDEO)) {
             url = UrlUtils.parsePlaylistFromSingleVideoURL(url);
         }
 
         String fileName = "";
+        String[] commands = new String[0];
+        String videoTitle = "";
 
-        try {
-            Map<String, Object> result = urlEnum.equals(TipoUrlEnum.PLAYLIST)
-                    ? ytDlCommands.buildPlaylistCommand(url, musicFolder)
-                    : ytDlCommands.buildSingleVideoCommand(url, musicFolder);
-
-            String[] commands = (String[]) result.get("commands");
-
-            fileName = (String) result.get("filename");
-            executeCommand(commands, Boolean.FALSE);
-
-            logger.info("Finalizado a conversao do arquivo.");
-        } catch (IOException | InterruptedException e) {
-            logger.error(e.getMessage());
+        switch (urlEnum) {
+            case SINGLE_VIDEO:
+                commands = ytDlCommands.buildGetTitleCommand(url);
+                videoTitle = executeCommand(commands, true);
+                commands = ytDlCommands.buildSingleVideoCommand(url, musicFolder, audioFileRequest);
+                break;
+            case PLAYLIST:
+                commands = ytDlCommands.buildPlaylistCommand(url, musicFolder, audioFileRequest);
+                break;
+            default:
+                break;
         }
+        executeCommand(commands, Boolean.FALSE);
 
-        return fileName;
+        String fullPath = System.getProperty("java.io.tmpdir").trim() + videoTitle + "."
+                + audioFileRequest.getAudioFormat();
+        fileName = videoTitle + "." + audioFileRequest.getAudioFormat();
+
+        logger.info("Finalizado a conversao do arquivo.");
+
+        return new String[] { fullPath, fileName };
 
     }
 
@@ -108,20 +109,38 @@ public class DownloadService {
         return returnOutput ? output.toString().trim() : null;
     }
 
-    public Resource loadFileAsResource(String fileName) throws IOException {
-        Path filePath = getFilePath(fileName);
-        Resource resource = new UrlResource(filePath.toUri());
-        if (resource.exists()) {
-            return resource;
-        } else {
-            throw new FileNotFoundException("Arquivo não encontrado: " + fileName);
+    public Resource loadFileAsResource(String filePath) throws IOException {
+        try {
+            Path path = Paths.get(filePath);
+            Resource resource = new UrlResource(path.toUri());
+
+            if (resource.exists()) {
+                File file = resource.getFile();
+                return new DeletingResource(file);
+            } else {
+                throw new RuntimeException("Arquivo não encontrado: " + filePath);
+            }
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException("Arquivo não encontrado: " + filePath, ex);
         }
     }
 
-    private Path getFilePath(String fileName) {
-        // Retorne o caminho do arquivo baseado no nome do arquivo
-        // Isso dependerá de onde você está salvando os arquivos convertidos
-        return Paths.get("caminho/para/arquivos/convertidos").resolve(fileName);
-    }
+    // Classe interna para gerenciar a exclusão do arquivo
+    private static class DeletingResource extends UrlResource implements AutoCloseable {
+        private final File file;
 
+        public DeletingResource(File file) throws MalformedURLException {
+            super(file.toURI());
+            this.file = file;
+        }
+
+        @Override
+        public void close() {
+            if (file.exists() && file.delete()) {
+                System.out.println("Arquivo deletado com sucesso: " + file.getAbsolutePath());
+            } else {
+                System.out.println("Falha ao deletar o arquivo: " + file.getAbsolutePath());
+            }
+        }
+    }
 }
