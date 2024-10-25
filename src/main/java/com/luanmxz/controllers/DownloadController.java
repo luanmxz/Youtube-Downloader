@@ -3,6 +3,7 @@ package com.luanmxz.controllers;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.UUID;
+import java.net.URLEncoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +39,8 @@ public class DownloadController {
 
         AudioFile audioFileRequest = new AudioFile(url, audioFormat, audioQuality);
 
+        String urlFormatted = URLEncoder.encode(url, StandardCharsets.UTF_8);
+
         String[] result = downloadService.downloadAndConvertToAudio(audioFileRequest);
         String fullPath = result[0];
         String fileName = result[1];
@@ -48,17 +51,17 @@ public class DownloadController {
 
         return ResponseEntity.ok(String.format(
                 """
-                        <div class="bg-red-500 text-white rounded flex items-center justify-between overflow-hidden h-14 max-w-sm mx-auto" id="%s">
+                        <div class="bg-red-500 text-white rounded flex items-center justify-between overflow-hidden h-14 max-w-sm mx-auto" id="item_%s">
                             <div class="flex items-center h-full">
                                 <a href="/api/download/%s" download class="flex-shrink-0 w-8 h-8 flex items-center justify-center ml-2 text-3xl hover:scale-105">⬇️</a>
                                 <span id="videoName" class="flex-grow truncate px-3 text-sm max-w-[54%%]">%s</span>
                                  <div class="flex-shrink-0 flex space-x-1 pr-2">
-                                    <button class="w-6 h-6 flex items-center justify-center hover:scale-105 onclick="copyUrlValue('%s')">
+                                    <button class="w-6 h-6 flex items-center justify-center hover:scale-105" onclick="copyUrlValue('%s')">
                                         <input id="hidden_url" type="text" value="%s" class="hidden">
                                         📁
                                     </button>
                                     <button class="w-6 h-6 flex items-center justify-center hover:scale-105"
-                                        onclick="removeItem('%s')"
+                                        onclick="removeItem('item_%s')"
                                         hx-target="#item_%s"
                                         hx-swap="outerHTML">
                                         🗑️
@@ -67,7 +70,7 @@ public class DownloadController {
                             </div>
                         </div>
                         """,
-                itemId, encodedFileName, fileName, url, url, itemId, itemId));
+                itemId, encodedFileName, fileName, urlFormatted, urlFormatted, itemId, itemId));
     }
 
     @GetMapping("/download/{audioUrl}")
@@ -103,7 +106,7 @@ public class DownloadController {
                                                 <button type="button" disabled class="flex-shrink-0 w-8 h-8 flex items-center justify-center ml-2 text-3xl">⬇️</button>
                                                 <span id="videoName" class="flex-grow truncate px-3 text-sm max-w-[54%]">${item.fileName}</span>
                                                 <div class="flex-shrink-0 flex space-x-1 pr-2">
-                                                    <button class="w-6 h-6 flex items-center justify-center hover:scale-105 onclick="copyUrlValue('%s')">
+                                                    <button class="w-6 h-6 flex items-center justify-center hover:scale-105" onclick="copyUrlValue(${item.url})">
                                                     <input id="hidden_url" type="text" value="${item.url}" class="hidden">
                                                     📁
                                                     </button>

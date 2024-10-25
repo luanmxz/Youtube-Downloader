@@ -48,8 +48,20 @@
                         <strong>Donate</strong>
                     </span>
                     <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider round">
+                            <svg id="sun-icon" class="w-4 h-4 absolute top-1/2 left-1 transform -translate-y-1/2"
+                                fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <svg id="moon-icon"
+                                class="w-4 h-4 absolute top-1/2 right-1 transform -translate-y-1/2 hidden"
+                                fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                            </svg>
+                        </span>
                     </label>
                 </div>
             </div>
@@ -191,7 +203,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: #63d8ff;
             transition: .4s;
         }
 
@@ -207,7 +219,7 @@
         }
 
         input:checked+.slider {
-            background-color: #ef4444;
+            background-color: #24289a;
         }
 
         input:checked+.slider:before {
@@ -220,6 +232,20 @@
 
         .slider.round:before {
             border-radius: 50%;
+        }
+
+        #sun-icon,
+        #moon-icon {
+            color: #333;
+            transition: opacity 0.3s ease;
+        }
+
+        input:checked+.slider #sun-icon {
+            opacity: 0;
+        }
+
+        input:checked+.slider #moon-icon {
+            opacity: 1;
         }
 
         .hidden {
@@ -351,6 +377,29 @@
             console.log(itemId);
             document.getElementById(itemId).remove();
         }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            sunIcon.classList.toggle('hidden');
+            moonIcon.classList.toggle('hidden');
+        }
+
+        document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.getElementById('darkModeToggle').checked = true;
+            toggleDarkMode();
+        }
+
+        document.getElementById('darkModeToggle').addEventListener('change', function () {
+            if (this.checked) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', null);
+            }
+        });
     </script>
 </body>
 
