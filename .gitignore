@@ -3,3 +3,5 @@ DownloadedVideos/
 target/
 .vscode/
 .env
+node_modules/
+**/*.build.css

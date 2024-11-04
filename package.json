@@ -1,0 +1,29 @@
+{
+  "name": "youtube-downloader",
+  "version": "1.0.0",
+  "description": "This project is a comprehensive YouTube video and playlist downloader and converter. It allows users to download and convert YouTube content into various formats, providing a flexible tool for managing and enjoying online videos offline.",
+  "main": "index.js",
+  "devDependencies": {
+    "autoprefixer": "^10.3.7",
+    "postcss": "^8.3.11",
+    "postcss-cli": "^8.3.1",
+    "tailwindcss": "^2.2.19"
+  },
+  "scripts": {
+    "build": "postcss src/main/resources/static/css/tailwind.css -o src/main/resources/static/css/tailwind.build.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luanmxz/Youtube-Downloader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luanmxz/Youtube-Downloader/issues"
+  },
+  "homepage": "https://github.com/luanmxz/Youtube-Downloader#readme",
+  "dependencies": {
+    "postcss-cli": "^11.0.0"
+  }
+}
