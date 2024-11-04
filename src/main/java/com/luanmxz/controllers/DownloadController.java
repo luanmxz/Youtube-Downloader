@@ -3,7 +3,6 @@ package com.luanmxz.controllers;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.UUID;
-import java.net.URLEncoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -33,13 +32,11 @@ public class DownloadController {
     DownloadService downloadService;
 
     @PostMapping("/convert")
-    public ResponseEntity<String> downloadVideoAndConvertToAudio(@RequestParam("url") String url,
+    public ModelAndView downloadVideoAndConvertToAudio(@RequestParam("url") String url,
             @RequestParam("format") String audioFormat, @RequestParam("quality") String audioQuality,
             HttpServletRequest request, HttpServletResponse response) throws IOException, InterruptedException {
 
         AudioFile audioFileRequest = new AudioFile(url, audioFormat, audioQuality);
-
-        String urlFormatted = URLEncoder.encode(url, StandardCharsets.UTF_8);
 
         String[] result = downloadService.downloadAndConvertToAudio(audioFileRequest);
         String fullPath = result[0];
@@ -49,28 +46,13 @@ public class DownloadController {
 
         String itemId = UUID.randomUUID().toString();
 
-        return ResponseEntity.ok(String.format(
-                """
-                        <div class="bg-red-500 text-white rounded flex items-center justify-between overflow-hidden h-14 max-w-sm mx-auto" id="item_%s">
-                            <div class="flex items-center h-full">
-                                <a href="/api/download/%s" download class="flex-shrink-0 w-8 h-8 flex items-center justify-center ml-2 text-3xl hover:scale-105">⬇️</a>
-                                <span id="videoName" class="flex-grow truncate px-3 text-sm max-w-[54%%]">%s</span>
-                                 <div class="flex-shrink-0 flex space-x-1 pr-2">
-                                    <button class="w-6 h-6 flex items-center justify-center hover:scale-105" onclick="copyUrlValue('%s')">
-                                        <input id="hidden_url" type="text" value="%s" class="hidden">
-                                        📁
-                                    </button>
-                                    <button class="w-6 h-6 flex items-center justify-center hover:scale-105"
-                                        onclick="removeItem('item_%s')"
-                                        hx-target="#item_%s"
-                                        hx-swap="outerHTML">
-                                        🗑️
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        """,
-                itemId, encodedFileName, fileName, urlFormatted, urlFormatted, itemId, itemId));
+        ModelAndView modelAndView = new ModelAndView("convertedItem");
+        modelAndView.addObject("itemId", itemId);
+        modelAndView.addObject("encodedFileName", encodedFileName);
+        modelAndView.addObject("fileName", fileName);
+        modelAndView.addObject("url", url);
+
+        return modelAndView;
     }
 
     @GetMapping("/download/{audioUrl}")
@@ -91,37 +73,9 @@ public class DownloadController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<String> getConvertedFilesHistory(HttpServletRequest request) {
-        return ResponseEntity.ok(
-                """
-                        <script>
-                            let convertedFiles = [];
-                            for (let i = 0; i < localStorage.length; i++) {
-                                let key = localStorage.key(i);
-                                if (key.startsWith('item_')) {
-                                    let item = JSON.parse(localStorage.getItem(key));
-                                    convertedFiles.push(`
-                                        <div class="bg-red-500 text-white rounded flex items-center justify-between overflow-hidden h-14 max-w-sm mx-auto" id="${key}">
-                                            <div class="flex items-center h-full">
-                                                <button type="button" disabled class="flex-shrink-0 w-8 h-8 flex items-center justify-center ml-2 text-3xl">⬇️</button>
-                                                <span id="videoName" class="flex-grow truncate px-3 text-sm max-w-[54%]">${item.fileName}</span>
-                                                <div class="flex-shrink-0 flex space-x-1 pr-2">
-                                                    <button class="w-6 h-6 flex items-center justify-center hover:scale-105" onclick="copyUrlValue(${item.url})">
-                                                    <input id="hidden_url" type="text" value="${item.url}" class="hidden">
-                                                    📁
-                                                    </button>
-                                                    <button class="w-6 h-6 flex items-center justify-center hover:scale-105"
-                                                            onclick="removeItem('${key}')"
-                                                            hx-target="#${key}"
-                                                            hx-swap="outerHTML">🗑️</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `);
-                                }
-                            }
-                            document.getElementById('result').innerHTML = convertedFiles.join('');
-                        </script>
-                        """);
+    public ModelAndView getConvertedFilesHistory(HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("itemHistory");
+
+        return modelAndView;
     }
 }
