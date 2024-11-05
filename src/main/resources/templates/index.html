@@ -68,8 +68,8 @@
         </header>
 
 
-        <form id="convert-form" hx-post="/api/convert" hx-target="#result" hx-swap="beforeend" hx-trigger="submit"
-            hx-on::before-submit="return validateForm(event)" class="mb-6 mt-16 w-[600px] mx-auto relative">
+        <form id="convert-form" class="mb-6 mt-16 w-[600px] mx-auto relative" hx-trigger="submit" hx-post="/api/convert"
+            hx-target="#result" hx-swap="beforeend" hx-on::before-request="return validateForm(event)">
             <div id="input-container"
                 class="drop-shadow-lg w-full rounded-full px-4 py-2 bg-white shadow-md flex items-center">
                 <input type="text" name="url" placeholder="Insert Youtube Video URL here" autocomplete="off"
@@ -89,29 +89,6 @@
                                         d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                         </button>
-                        <button type="button" id="call-trim-modal" hx-get="/api/trim-modal" hx-target="#trim-modal"
-                            hx-swap="innerHTML" hx-trigger="click" onclick="toggleTrimModal(event)">
-                            <svg class="w-5 h-5 text-gray-500 hover:text-gray-900" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z">
-                                </path>
-                            </svg>
-                        </button>
-                        <div id="trim-modal" class="hidden absolute bg-white shadow-lg rounded-lg p-4 z-50">
-                        </div>
-                        <button type="button" id="call-quality-modal" hx-get="/api/quality-modal"
-                            hx-target="#quality-modal" hx-swap="innerHTML" hx-trigger="click"
-                            onclick="toggleQualityModal(event)">
-                            <svg class="w-5 h-5 text-gray-500 hover:text-gray-900" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
-                                </path>
-                            </svg>
-                        </button>
-                        <div id="quality-modal" class="hidden absolute bg-white shadow-lg rounded-lg p-4 z-50">
-                        </div>
                     </div>
                     <button type="submit" id="convert-button"
                         class="bg-red-500 text-white px-8 py-3 rounded-full hover:bg-red-600 transition duration-300 text-md flex items-center justify-center">
@@ -158,15 +135,14 @@
             <div class="bg-gray-800 text-white p-4 rounded-lg">
                 <h3 class="text-xl font-bold mb-2"><span class="bg-red-500 rounded-full px-2 py-1 mr-2">02</span>Baixar
                 </h3>
-                <p>Selecione as opções de conversão/download e clique para baixar.</p>
+                <p>Clique para baixar. Se desejar, você pode alterar as opções de conversão/download antes de realizar o
+                    download.</p>
             </div>
             <div class="bg-gray-800 text-white p-4 rounded-lg">
                 <h3 class="text-xl font-bold mb-2"><span
                         class="bg-red-500 rounded-full px-2 py-1 mr-2">03</span>Histórico
                 </h3>
-                <p>Você pode ver, baixar novamente ou excluir vídeos do seu histórico. Também é possível
-                    baixar o vídeo
-                    em outro formato.</p>
+                <p>Você pode ver os arquivos baixados no seu histórico.</p>
             </div>
         </div>
     </div>
