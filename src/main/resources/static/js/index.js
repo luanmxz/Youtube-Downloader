@@ -15,15 +15,6 @@ function hideSpinner() {
 	document.getElementById('convert-button').disabled = false;
 }
 
-function cutVideo() {
-	if (isUrlEmpty(document.getElementById('url').value)) {
-		showToast(
-			'Você deve inserir a URL de algum vídeo antes de selecionar as opções de corte!',
-			true
-		);
-	}
-}
-
 function showToast(message, error) {
 	const toast = document.getElementById('toast');
 	const messageElement = document.getElementById('toastMessage');
@@ -44,12 +35,8 @@ function showToast(message, error) {
 	}, 3000);
 }
 
-function isUrlEmpty(url) {
-	return url.length < 1;
-}
-
 function validateForm(event) {
-	if (isUrlEmpty(document.getElementById('url').value)) {
+	if (document.getElementById('url').value.length < 1) {
 		showToast(
 			'Você deve inserir a URL de algum vídeo antes de converter!',
 			true
@@ -66,10 +53,6 @@ function validateForm(event) {
 	showSpinner();
 
 	return true;
-}
-
-function isUrlEmpty(url) {
-	return url.trim().length === 0;
 }
 
 function copyUrlValue(url) {
@@ -146,45 +129,3 @@ document
 			localStorage.setItem('darkMode', null);
 		}
 	});
-
-function toggleTrimModal(event) {
-	event.preventDefault();
-	const modal = document.getElementById('trim-modal');
-	modal.classList.toggle('hidden');
-}
-
-document.addEventListener('click', function (event) {
-	const modal = document.getElementById('trim-modal');
-	const modalContent = modal.querySelector('.trim-modal-content');
-
-	if (modal && !modal.classList.contains('hidden')) {
-		if (
-			!modalContent.contains(event.target) &&
-			!event.target.closest('button[hx-get="/trim-modal"]')
-		) {
-			modal.innerHTML = '';
-			modal.classList.add('hidden');
-		}
-	}
-});
-
-function toggleQualityModal(event) {
-	event.preventDefault();
-	const modal = document.getElementById('quality-modal');
-	modal.classList.toggle('hidden');
-}
-
-document.addEventListener('click', function (event) {
-	const modal = document.getElementById('quality-modal');
-	const modalContent = modal.querySelector('.quality-modal-content');
-
-	if (modal && !modal.classList.contains('hidden')) {
-		if (
-			!modalContent.contains(event.target) &&
-			!event.target.closest('button[hx-get="/quality-modal"]')
-		) {
-			modal.innerHTML = '';
-			modal.classList.add('hidden');
-		}
-	}
-});
