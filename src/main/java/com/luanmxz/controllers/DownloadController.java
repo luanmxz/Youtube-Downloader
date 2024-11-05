@@ -33,10 +33,10 @@ public class DownloadController {
 
     @PostMapping("/convert")
     public ModelAndView downloadVideoAndConvertToAudio(@RequestParam("url") String url,
-            @RequestParam("format") String audioFormat, @RequestParam("quality") String audioQuality,
+            @RequestParam("quality") String audioQuality,
             HttpServletRequest request, HttpServletResponse response) throws IOException, InterruptedException {
 
-        AudioFile audioFileRequest = new AudioFile(url, audioFormat, audioQuality);
+        AudioFile audioFileRequest = new AudioFile(url, audioQuality);
 
         String[] result = downloadService.downloadAndConvertToAudio(audioFileRequest);
         String fullPath = result[0];

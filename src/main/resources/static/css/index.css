@@ -100,3 +100,10 @@ input:checked+.slider #moon-icon {
     right: 0;
     width: 200px;
 }
+
+#copied-url-toast{
+    top: -50px;
+    right: 0;
+    width: 200px;
+    z-index: 9999;
+}

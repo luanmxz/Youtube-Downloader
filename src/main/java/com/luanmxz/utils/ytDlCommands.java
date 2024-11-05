@@ -40,7 +40,7 @@ public class ytDlCommands {
                 String[] commands = { ytDlpExecutablePath,
                                 "-i",
                                 "-x",
-                                "--audio-format", audioFileRequest.getAudioFormat(),
+                                "--audio-format", "mp3",
                                 "--audio-quality", audioFileRequest.getAudioQuality(),
                                 "-o", fullPath,
                                 "--no-check-certificate",
@@ -82,7 +82,7 @@ public class ytDlCommands {
                                 "--download-archive", "downloaded_videos_history.txt",
                                 "-i",
                                 "-x",
-                                "--audio-format", audioFileRequest.getAudioFormat(),
+                                "--audio-format", "mp3",
                                 "--audio-quality", audioFileRequest.getAudioQuality(),
                                 "-o", file.getAbsolutePath() + "\\" + "%(title)s.%(ext)s",
                                 url };

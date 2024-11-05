@@ -45,11 +45,6 @@ function validateForm(event) {
 		return false;
 	}
 
-	var qualityInput = document.getElementById('quality');
-	if (qualityInput.value !== '128k') {
-		qualityInput.value = '128k';
-	}
-
 	showSpinner();
 
 	return true;
@@ -129,3 +124,27 @@ document
 			localStorage.setItem('darkMode', null);
 		}
 	});
+
+document.body.addEventListener('htmx:configRequest', function (evt) {
+	const quality = document.getElementById('audio-quality-opts');
+	const qualityValue =
+		quality.querySelectorAll('option[selected]')[0].innerText;
+
+	evt.detail.parameters['quality'] = qualityValue;
+});
+
+document
+	.getElementById('audio-quality-opts')
+	.addEventListener('change', function () {
+		this.querySelectorAll('option').forEach((opt) =>
+			opt.removeAttribute('selected')
+		);
+		this.options[this.selectedIndex].setAttribute('selected', 'selected');
+	});
+
+document.addEventListener('DOMContentLoaded', function () {
+	const qualityOptions = document.getElementById('audio-quality-opts');
+	qualityOptions
+		.querySelectorAll('option')[1]
+		.setAttribute('selected', 'selected');
+});

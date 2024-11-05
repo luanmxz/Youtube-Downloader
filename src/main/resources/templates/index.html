@@ -73,25 +73,33 @@
             <div id="input-container"
                 class="drop-shadow-lg w-full rounded-full px-4 py-2 bg-white shadow-md flex items-center">
                 <input type="text" name="url" placeholder="Insert Youtube Video URL here" autocomplete="off"
-                    class="flex-grow outline-none bg-transparent px-4 max-w-[90%%] text-gray-600" id="url">
-                <input id="format" name="format" class="hidden" value="mp3" type="text">
-                <input id="quality" name="quality" class="hidden" value="128k" type="text">
-                <div class="flex items-center">
-                    <div class="flex space-x-2 mr-2 px-2">
-                        <button id="clear-input" type="reset" class="hidden">
+                    class="flex-grow outline-none bg-transparent px-4 max-w-[90%%] text-gray-600 text-sm" id="url">
+                <div class="flex space-x-2 px-2">
+                    <button id="clear-input" type="reset" class="hidden">
+                        <svg class="w-5 h-5 text-gray-500 hover:text-gray-900" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
                             <svg class="w-5 h-5 text-gray-500 hover:text-gray-900" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12"></path>
-                                <svg class="w-5 h-5 text-gray-500 hover:text-gray-900" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                        </button>
-                    </div>
+                            </svg>
+                    </button>
+                </div>
+                <div id="audio-quality-container">
+                    <label for="audio-quality-opts" class="mr-2 text-gray-500 text-md">Quality:</label>
+                    <select id="audio-quality-opts" class="p-2 rounded-md" autocomplete="off">
+                        <option value="0">64k</option>
+                        <option value="1">128k</option>
+                        <option value="2">198k</option>
+                        <option value="3">256k</option>
+                        <option value="4">320k</option>
+                    </select>
+                </div>
+                <div class="flex items-center">
                     <button type="submit" id="convert-button"
-                        class="bg-red-500 text-white px-8 py-3 rounded-full hover:bg-red-600 transition duration-300 text-md flex items-center justify-center">
+                        class="bg-red-500 text-white px-8 py-3.5 rounded-full ml-3.5 hover:bg-red-600 transition duration-300 text-md flex items-center justify-center">
                         <span id="button-text">Convert</span>
                         <svg id="button-spinner" class="animate-spin ml-2 h-5 w-5 text-white hidden"
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

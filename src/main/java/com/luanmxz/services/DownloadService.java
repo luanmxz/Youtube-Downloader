@@ -84,9 +84,8 @@ public class DownloadService {
         }
         executeCommand(commands, Boolean.FALSE);
 
-        String fullPath = System.getProperty("java.io.tmpdir").trim() + sanitizedVideoTitle + "."
-                + audioFileRequest.getAudioFormat();
-        fileName = videoTitle + "." + audioFileRequest.getAudioFormat();
+        String fullPath = System.getProperty("java.io.tmpdir").trim() + sanitizedVideoTitle + ".mp3";
+        fileName = videoTitle + ".mp3";
 
         logger.info("Finalizado a conversao do arquivo.");
 
