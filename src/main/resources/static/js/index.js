@@ -17,19 +17,26 @@ function hideSpinner() {
 
 function cutVideo() {
 	if (isUrlEmpty(document.getElementById('url').value)) {
-		showErrorToast(
-			'Você deve inserir a URL de algum vídeo antes de selecionar as opções de corte!'
+		showToast(
+			'Você deve inserir a URL de algum vídeo antes de selecionar as opções de corte!',
+			true
 		);
 	}
 }
 
-function showErrorToast(message) {
-	const toast = document.getElementById('errorToast');
-	const messageElement = document.getElementById('errorMessage');
+function showToast(message, error) {
+	const toast = document.getElementById('toast');
+	const messageElement = document.getElementById('toastMessage');
 	messageElement.textContent = message;
 
 	toast.classList.remove('translate-y-full', 'opacity-0');
 	toast.classList.add('translate-y-0', 'opacity-100');
+
+	if (error) {
+		toast.classList.add('bg-red-500');
+	} else {
+		toast.classList.add('bg-green-500');
+	}
 
 	setTimeout(() => {
 		toast.classList.add('translate-y-full', 'opacity-0');
@@ -43,8 +50,9 @@ function isUrlEmpty(url) {
 
 function validateForm(event) {
 	if (isUrlEmpty(document.getElementById('url').value)) {
-		showErrorToast(
-			'Você deve inserir a URL de algum vídeo antes de converter!'
+		showToast(
+			'Você deve inserir a URL de algum vídeo antes de converter!',
+			true
 		);
 		event.preventDefault();
 		return false;
@@ -66,6 +74,7 @@ function isUrlEmpty(url) {
 
 function copyUrlValue(url) {
 	navigator.clipboard.writeText(url);
+	showToast('Copied to clipboard!', false);
 }
 
 document.body.addEventListener('htmx:afterSwap', function (event) {
@@ -137,3 +146,45 @@ document
 			localStorage.setItem('darkMode', null);
 		}
 	});
+
+function toggleTrimModal(event) {
+	event.preventDefault();
+	const modal = document.getElementById('trim-modal');
+	modal.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function (event) {
+	const modal = document.getElementById('trim-modal');
+	const modalContent = modal.querySelector('.trim-modal-content');
+
+	if (modal && !modal.classList.contains('hidden')) {
+		if (
+			!modalContent.contains(event.target) &&
+			!event.target.closest('button[hx-get="/trim-modal"]')
+		) {
+			modal.innerHTML = '';
+			modal.classList.add('hidden');
+		}
+	}
+});
+
+function toggleQualityModal(event) {
+	event.preventDefault();
+	const modal = document.getElementById('quality-modal');
+	modal.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function (event) {
+	const modal = document.getElementById('quality-modal');
+	const modalContent = modal.querySelector('.quality-modal-content');
+
+	if (modal && !modal.classList.contains('hidden')) {
+		if (
+			!modalContent.contains(event.target) &&
+			!event.target.closest('button[hx-get="/quality-modal"]')
+		) {
+			modal.innerHTML = '';
+			modal.classList.add('hidden');
+		}
+	}
+});

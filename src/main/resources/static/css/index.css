@@ -88,3 +88,15 @@ input:checked+.slider #moon-icon {
 #errorToast {
     z-index: 9999;
 }
+
+#trim-modal {
+    top: -50px;
+    right: 0;
+    width: 200px;
+}
+
+#quality-modal {
+    top: -50px;
+    right: 0;
+    width: 200px;
+}

@@ -78,4 +78,18 @@ public class DownloadController {
 
         return modelAndView;
     }
+
+    @GetMapping("/trim-modal")
+    public ModelAndView getTrimModal(HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("trimAudioModal");
+
+        return modelAndView;
+    }
+
+    @GetMapping("/quality-modal")
+    public ModelAndView getQualityModal(HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("audioQualityModal");
+
+        return modelAndView;
+    }
 }

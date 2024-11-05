@@ -9,18 +9,26 @@
     <link href="css/tailwind.build.css" rel="stylesheet">
     <link href="css/globals.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.10" defer></script>
+    <link rel="stylesheet" href="css/tailwind.build.css">
+    <link rel="stylesheet" href="css/globals.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
-    <div id="errorToast"
-        class="z-50 fixed top-5 right-5 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-y-full opacity-0">
+    <div id="toast"
+        class="z-50 fixed top-5 right-5 text-white px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-y-full opacity-0">
         <div class="flex items-center">
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span id="errorMessage"></span>
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span id="toastMessage"></span>
         </div>
     </div>
 
@@ -59,8 +67,9 @@
             </div>
         </header>
 
+
         <form id="convert-form" hx-post="/api/convert" hx-target="#result" hx-swap="beforeend" hx-trigger="submit"
-            hx-on::before-request="return validateForm(event)" class="mb-6 mt-16 w-[600px] mx-auto relative">
+            hx-on::before-submit="return validateForm(event)" class="mb-6 mt-16 w-[600px] mx-auto relative">
             <div id="input-container"
                 class="drop-shadow-lg w-full rounded-full px-4 py-2 bg-white shadow-md flex items-center">
                 <input type="text" name="url" placeholder="Insert Youtube Video URL here" autocomplete="off"
@@ -74,9 +83,14 @@
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
+                                <svg class="w-5 h-5 text-gray-500 hover:text-gray-900" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
                         </button>
-                        <button type="button" onclick="cutVideo()">
+                        <button type="button" id="call-trim-modal" hx-get="/api/trim-modal" hx-target="#trim-modal"
+                            hx-swap="innerHTML" hx-trigger="click" onclick="toggleTrimModal(event)">
                             <svg class="w-5 h-5 text-gray-500 hover:text-gray-900" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -84,7 +98,11 @@
                                 </path>
                             </svg>
                         </button>
-                        <button type="button">
+                        <div id="trim-modal" class="hidden absolute bg-white shadow-lg rounded-lg p-4 z-50">
+                        </div>
+                        <button type="button" id="call-quality-modal" hx-get="/api/quality-modal"
+                            hx-target="#quality-modal" hx-swap="innerHTML" hx-trigger="click"
+                            onclick="toggleQualityModal(event)">
                             <svg class="w-5 h-5 text-gray-500 hover:text-gray-900" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -92,6 +110,8 @@
                                 </path>
                             </svg>
                         </button>
+                        <div id="quality-modal" class="hidden absolute bg-white shadow-lg rounded-lg p-4 z-50">
+                        </div>
                     </div>
                     <button type="submit" id="convert-button"
                         class="bg-red-500 text-white px-8 py-3 rounded-full hover:bg-red-600 transition duration-300 text-md flex items-center justify-center">
@@ -103,7 +123,14 @@
                             <path class="opacity-75" fill="currentColor"
                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                             </path>
-                        </svg>
+                            <svg id="button-spinner" class="animate-spin ml-2 h-5 w-5 text-white hidden"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
                     </button>
                 </div>
             </div>
@@ -137,7 +164,8 @@
                 <h3 class="text-xl font-bold mb-2"><span
                         class="bg-red-500 rounded-full px-2 py-1 mr-2">03</span>Histórico
                 </h3>
-                <p>Você pode ver, baixar novamente ou excluir vídeos do seu histórico. Também é possível baixar o vídeo
+                <p>Você pode ver, baixar novamente ou excluir vídeos do seu histórico. Também é possível
+                    baixar o vídeo
                     em outro formato.</p>
             </div>
         </div>
