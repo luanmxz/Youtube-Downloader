@@ -26,16 +26,15 @@ public class ytDlCommands {
 
         public static String[] buildGetTitleCommand(String url) {
                 String[] commands = { ytDlpExecutablePath,
-                                "--get-title",
-                                url };
+                                "--get-title", url };
 
                 return commands;
         }
 
         public static String[] buildSingleVideoCommand(String url, String musicFolder,
-                        AudioFile audioFileRequest)
+                        AudioFile audioFileRequest, String videoTitle)
                         throws IOException, InterruptedException {
-                String filename = "%(title)s.%(ext)s";
+                String filename = videoTitle + ".%(ext)s";
                 String fullPath = musicFolder + filename;
 
                 String[] commands = { ytDlpExecutablePath,
@@ -46,8 +45,11 @@ public class ytDlCommands {
                                 "-o", fullPath,
                                 "--no-check-certificate",
                                 "--prefer-ffmpeg",
-                                "--concurrent-fragments", "5",
-
+                                "--http-chunk-size", "10M",
+                                "--buffer-size", "16K",
+                                "--downloader", "aria2c",
+                                "--concurrent-fragments", "10",
+                                "--print title",
                                 url };
 
                 return commands;

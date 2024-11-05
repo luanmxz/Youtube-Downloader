@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
+
 <body>
     <div class="bg-red-500 text-white rounded flex items-center justify-between overflow-hidden h-14 max-w-sm mx-auto"
         th:id="'item_' + ${itemId}">
-        <div class="flex items-center h-full w-full">
-            <div class="flex items-center max-w-[80%]">
+        <div class="flex items-center justify-between h-full w-96">
+            <div class="flex items-center max-w-[80%] overflow-hidden">
                 <a th:href="'/api/download/' + ${encodedFileName}" download
                     class="flex-shrink-0 w-8 h-8 flex items-center justify-center ml-2 text-3xl hover:scale-105">⬇️</a>
-                <span id="videoName" class="flex-grow truncate px-3 text-sm" th:text="${fileName}"></span>
+                <span id="videoName"
+                    class="flex-grow truncate px-3 text-sm overflow-ellipsis overflow-hidden whitespace-nowrap"
+                    th:text="${fileName}"></span>
             </div>
             <div class="flex-shrink-0 flex space-x-1 pr-2">
                 <button class="w-6 h-6 flex items-center justify-center hover:scale-105"

@@ -10,11 +10,13 @@ import java.nio.file.Paths;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
 import com.luanmxz.record.request.AudioFile;
+import com.luanmxz.utils.FileUtils;
 import com.luanmxz.utils.TipoUrlEnum;
 import com.luanmxz.utils.UrlUtils;
 import com.luanmxz.utils.ytDlCommands;
@@ -64,12 +66,15 @@ public class DownloadService {
         String fileName = "";
         String[] commands = new String[0];
         String videoTitle = "";
+        String sanitizedVideoTitle = "";
 
         switch (urlEnum) {
             case SINGLE_VIDEO:
                 commands = ytDlCommands.buildGetTitleCommand(url);
                 videoTitle = executeCommand(commands, true);
-                commands = ytDlCommands.buildSingleVideoCommand(url, musicFolder, audioFileRequest);
+                sanitizedVideoTitle = FileUtils.sanitizeFilename(videoTitle);
+                commands = ytDlCommands.buildSingleVideoCommand(url, musicFolder, audioFileRequest,
+                        sanitizedVideoTitle);
                 break;
             case PLAYLIST:
                 commands = ytDlCommands.buildPlaylistCommand(url, musicFolder, audioFileRequest);
@@ -79,7 +84,7 @@ public class DownloadService {
         }
         executeCommand(commands, Boolean.FALSE);
 
-        String fullPath = System.getProperty("java.io.tmpdir").trim() + videoTitle + "."
+        String fullPath = System.getProperty("java.io.tmpdir").trim() + sanitizedVideoTitle + "."
                 + audioFileRequest.getAudioFormat();
         fileName = videoTitle + "." + audioFileRequest.getAudioFormat();
 
@@ -116,31 +121,12 @@ public class DownloadService {
 
             if (resource.exists()) {
                 File file = resource.getFile();
-                return new DeletingResource(file);
+                return new FileSystemResource(file);
             } else {
                 throw new RuntimeException("Arquivo não encontrado: " + filePath);
             }
         } catch (MalformedURLException ex) {
             throw new RuntimeException("Arquivo não encontrado: " + filePath, ex);
-        }
-    }
-
-    // Classe interna para gerenciar a exclusão do arquivo
-    private static class DeletingResource extends UrlResource implements AutoCloseable {
-        private final File file;
-
-        public DeletingResource(File file) throws MalformedURLException {
-            super(file.toURI());
-            this.file = file;
-        }
-
-        @Override
-        public void close() {
-            if (file.exists() && file.delete()) {
-                System.out.println("Arquivo deletado com sucesso: " + file.getAbsolutePath());
-            } else {
-                System.out.println("Falha ao deletar o arquivo: " + file.getAbsolutePath());
-            }
         }
     }
 }

@@ -22,4 +22,11 @@ public class FileUtils {
             return musicPath;
         }
     }
+
+    public static String sanitizeFilename(String filename) {
+        return filename
+                .replaceAll("[#\\s\\(\\)\\|]", "_") // Replace #, |, spaces, and parentheses with underscore
+                .replaceAll("[^a-zA-Z0-9._-]", "") // Remove any other special characters
+                .replaceAll("_{2,}", "_"); // Replace multiple underscores with single underscore
+    }
 }
